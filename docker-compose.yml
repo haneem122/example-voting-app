@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.9"
 
 services:
   vote:
@@ -7,10 +7,10 @@ services:
     volumes:
      - ./vote:/app
     ports:
-      - "5000:80"
+      - "5005:80"
     networks:
-      - front-tier
-      - back-tier
+      - frontend
+
 
   result:
     build: ./result
@@ -18,23 +18,24 @@ services:
     volumes:
       - ./result:/app
     ports:
-      - "5001:80"
+      - "5006:80"
       - "5858:5858"
     networks:
-      - front-tier
-      - back-tier
+      - backend
+     
 
   worker:
     build:
       context: ./worker
     networks:
-      - back-tier
+      - backend
+      - frontend
 
   redis:
     image: redis:5.0-alpine3.10
     ports: ["6379"]
     networks:
-      - back-tier
+      - frontend
 
   db:
     image: postgres:9.4
@@ -44,11 +45,11 @@ services:
     volumes:
       - "db-data:/var/lib/postgresql/data"
     networks:
-      - back-tier
+      - backend
 
 volumes:
   db-data:
 
 networks:
-  front-tier:
-  back-tier:
+  frontend:
+  backend:
